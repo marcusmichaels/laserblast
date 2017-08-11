@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>LASER SHOT</title>
+
+  <style>
+    html,
+    body {
+      margin:0;
+      padding:0;
+      width:100%;
+    }
+
+    #container {
+      position: relative;
+      width:100%;
+    }
+
+    #laser-gun {
+      position: absolute;
+      left:40px;
+      top:0;
+      width:130px;
+      height:50px;
+      background-color: gold;
+      transform:translateY(-50%);
+      z-index: 100;
+    }
+
+    .beam {
+      position: fixed;
+      width:100px;
+      height: 2px;
+      background-color: red;
+      top:50%;
+      margin-top:-1px;
+      left:40px;
+      transition: all 0.3s;
+      /*transition-timing-function: linear;*/
+    }
+
+  </style>
+</head>
+<body>
+
+<div id="container">
+
+  <div id="laser-gun"></div>
+
+</div>
+
+  <script type="text/javascript">
+    var laserGun = document.getElementById('laser-gun'),
+        container = document.getElementById('container'),
+        beamMaker;
+
+
+    var laserphaser = laserphaser || {};
+
+    var laserphaser = {
+
+      init: function(){
+        document.onmousemove = this.moveLaserGun;
+        document.onmousedown = this.shootLaser;
+        document.onmouseup = document.onmouseleave = this.stopLaser;
+
+        this.randomTarget();
+      },
+
+      moveLaserGun: function(e){
+        laserGun.style.top = e.pageY + "px";
+      },
+
+      shootLaser: function(e){
+        // Create Beam Element
+        var beam = document.createElement('div');
+            beam.className = 'beam';
+            beam.style.top = e.pageY + "px";
+            document.body.appendChild(beam);
+
+
+
+        if (!!document.getElementsByClassName('target')) {
+
+          var targetTop = parseInt(document.getElementsByClassName('target')[0].style.top);
+          var targetHeight = document.getElementsByClassName('target')[0].clientHeight;
+          var targetWidth = document.getElementsByClassName('target')[0].clientWidth;
+          var targetRight = parseInt(document.getElementsByClassName('target')[0].style.right);
+
+          if (parseInt(beam.style.top) > targetTop  && parseInt(beam.style.top) < (targetHeight + targetTop)) {
+            
+            setTimeout(function(){
+              beam.style.left = container.clientWidth - targetWidth - targetRight - 200 + 'px';
+              beam.style.width = "200px";
+            },10);
+
+            setTimeout(function(){
+              beam.style.left = '-100px';
+              beam.style.width = "100px"; 
+            },300); 
+          } else {
+             setTimeout(function(){
+              beam.style.left = container.clientWidth + 'px';
+              beam.style.width = "200px";
+            },200);
+          } 
+        } 
+
+        // Destroy Beam after 1s
+        setTimeout(function(){
+          beam.outerHTML = "";
+        },600);
+      },
+
+      randomTarget: function(){
+        // Quick Hacky Obstacle
+        var target = document.createElement('div');
+        target.style.position = "absolute";
+        target.className = "target";
+        target.style.top = "200px";
+        target.style.right = "100px";
+        target.style.width = "10px";
+        target.style.backgroundColor = "green";
+        target.style.height = "400px";
+        container.appendChild(target);
+      }
+    }
+
+    laserphaser.init();
+
+  </script>
+</body>
+</html>
